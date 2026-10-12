@@ -1,0 +1,92 @@
+version: 1
+
+# Switch passwords are read from TPLINK_PASSWORD_<SWITCH_NAME> environment
+# variables (for example, TPLINK_PASSWORD_SWITCH1). TPLINK_PASSWORD is a shared
+# fallback for existing single-password setups. Never put credentials in YAML.
+router:
+  name: router1
+
+vlans:
+  management:
+    id: 1
+    name: management
+  home:
+    id: 20
+    name: home
+  iot:
+    id: 30
+    name: iot
+  parking: # Fallback for undeclared ports and trunks without a configured native VLAN.
+    id: 998
+    name: parking
+
+wifi_networks:
+  home_wifi:
+    ssid: Home
+    vlan: home
+  guest_wifi:
+    ssid: Guest
+    vlan: iot
+
+switches:
+  switch1:
+    host: 192.168.1.10
+    model: TL-SG108E
+    port_count: 8
+    ports:
+      # A link port has one upstream/downstream peer and a matching native VLAN.
+      # Link ports use management VLAN untagged and as PVID. Required VLANs propagate tagged except parking.
+      1:
+        kind: link
+        upstream: router # A special value for upstream to point to the router. The router is always the root of the topology.
+        native_vlan: management
+
+      2:
+        # Access port produces an untagged VLAN membership and matching PVID.
+        # Name refers to the device connected to the port.
+        kind: access
+        name: living-room-tv
+        native_vlan: iot
+
+      3:
+        # Trunk port carries multiple tagged VLANs and can have a single untagged native VLAN.
+        # If the native VLAN is not specified, parking is added as an untagged member and PVID.
+        # Name refers to the device connected to the port.
+        kind: trunk
+        name: server1
+        vlans:
+          - management
+          - home
+          - iot
+        native_vlan: management
+
+      # Not all ports need to be declared. Undeclared ports PVID is set to parking. Undeclared ports are not allowed to carry any VLANs.
+
+      4:
+        # Wi-Fi ports use native_vlan untagged and carry every configured wifi_network VLAN tagged.
+        kind: wifi
+        name: living-room-ap
+        native_vlan: management
+
+      8:
+        # Downstream link ports use management VLAN untagged/PVID and carry downstream VLAN needs tagged, except parking.
+        kind: link
+        downstream: switch2
+        native_vlan: management
+
+  switch2:
+    host: 192.168.1.11
+    model: TL-SG108E
+    port_count: 8
+    ports:
+      1:
+        kind: trunk
+        name: server2
+        vlans:
+          - iot
+        native_vlan: management
+
+      8:
+        kind: link
+        upstream: switch1
+        native_vlan: management

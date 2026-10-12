@@ -1,0 +1,33 @@
+# pyproject.toml
+[project]
+name = "vlan-manager"
+version = "0.1.0"
+description = "Reconcile Tp-Link managed-switch VLAN state from declarative YAML"
+readme = "README.md"
+license = "GPL-3.0-only"
+requires-python = ">=3.11"
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: System Administrators",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: System :: Networking",
+]
+dependencies = [
+  "PyYAML",
+  "tplink_tool",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.scripts]
+vlanmgr = "vlanmgr.cli:main"
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
