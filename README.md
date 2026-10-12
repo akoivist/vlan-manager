@@ -95,6 +95,11 @@ The tests use fake switch adapters and do not require access to real switches.
 ## License
 
 This project is licensed under the GNU General Public License v3.0 only
-(GPL-3.0-only); see [`LICENSE`](LICENSE). The TP-Link SDK dependency is a
-separate work. Its upstream repository declares GPLv3; verify the license of
-the exact SDK distribution you use before redistributing it.
+(GPL-3.0-only); see [`LICENSE`](LICENSE). The `tplink-tool` dependency is a
+separate work licensed under GPLv3.
+
+## Acknowledgements
+
+This project uses [`tplink-tool`](https://github.com/jfrancis42/tplink-tool)
+for TP-Link switch communication. See the upstream project for its authorship
+and license.
